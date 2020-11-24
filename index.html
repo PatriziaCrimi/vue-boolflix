@@ -39,7 +39,7 @@
                 <li class="product-card text-center" v-for="(product, index) in products_list">
                   <h2>{{product.title}}</h2>
                   <h3>{{product.original_title}}</h3>
-                  <img :src="languageProduct(product).url" alt="languageProduct(product).language" v-if="languageProduct(product).url !== ''">
+                  <img :src="'img/flags/' + languages_list[languageProduct(product)].url" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product) !== ''">
                   <span v-else>{{product.original_language}}</span>
                   <span>{{product.vote_average}}</span>
                 </li>

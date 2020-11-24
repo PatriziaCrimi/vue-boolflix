@@ -32,7 +32,53 @@ let app = new Vue({
     product_searched: '',
     language_choice: 'it',  // creare una SELECT
     products_list: [],
-    language_object: {},
+    languages_list: [
+      {
+        code: 'de',
+        language: 'Detusch',
+        url: 'germany_heart.png',
+      },
+      {
+        code: 'el',
+        language: 'Greek',
+        url: 'greece_heart.png',
+      },
+      {
+        code: 'en',
+        language: 'English',
+        url: 'uk_heart.png',
+      },
+      {
+        code: 'es',
+        language: 'Español',
+        url: 'spain_heart.png',
+      },
+      {
+        code: 'fr',
+        language: 'French',
+        url: 'france_heart.png',
+      },
+      {
+        code: 'ja',
+        language: 'Japanese',
+        url: 'japan_heart.png',
+      },
+      {
+        code: 'it',
+        language: 'Italiano',
+        url: 'italy_heart.png',
+      },
+      {
+        code: 'pt',
+        language: 'Portuguese',
+        url: 'brazil_heart.png',
+      },
+      {
+        code: 'zh',
+        language: 'Chinese',
+        url: 'china_heart.png',
+      },
+    ],
   },  // Closing data
   methods: {
     searchProduct() {
@@ -56,68 +102,14 @@ let app = new Vue({
       }
     },
     languageProduct(current_product) {
-      switch (current_product.original_language) {
-        case 'de':
-          this.language_object = {
-            language: 'Detusch',
-            url: 'img/flags/germany_heart.png',
-          };
-          break;
-        case 'el':
-          this.language_object = {
-            language: 'Greek',
-            url: 'img/flags/greece_heart.png',
-          };
-          break;
-        case 'en':
-          this.language_object = {
-            language: 'English',
-            url: 'img/flags/uk_heart.png',
-          };
-          break;
-        case 'es':
-          this.language_object = {
-            language: 'Español',
-            url: 'img/flags/spain_heart.png',
-          };
-          break;
-        case 'fr':
-          this.language_object = {
-            language: 'French',
-            url: 'img/flags/france_heart.png',
-          };
-          break;
-        case 'it':
-          this.language_object = {
-            language: 'Italiano',
-            url: 'img/flags/italy_heart.png',
-          };
-          break;
-        case 'ja':
-          this.language_object = {
-            language: 'Japanese',
-            url: 'img/flags/japan_heart.png',
-          };
-          break;
-        case 'pt':
-          this.language_object = {
-            language: 'Portuguese',
-            url: 'img/flags/brazil_heart.png',
-          };
-          break;
-        case 'zh':
-          this.language_object = {
-            language: 'Chinese',
-            url: 'img/flags/china_heart.png',
-          };
-          break;
-        default:
-          this.language_object = {
-            language: current_product.original_language,
-            url: '',
-          };
-      } // Closing switch
-      return this.language_object;
+      let index_product_language = '';
+      this.languages_list.forEach((language_details, index_language) => {
+        // If the language code of the product is the same as the language code of any of the languages available, then I must store the index of the language details, so to retrieve its properties/vaues to be printed on screen
+        if (current_product.original_language === language_details.code) {
+          index_product_language = index_language;
+        }
+      });
+      return index_product_language;
     },
   },  // Closing methods
 });
