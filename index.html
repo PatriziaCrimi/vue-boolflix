@@ -33,6 +33,18 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-12">
+              <ul id="cards-container">
+                <li class="product-card text-center" v-for="(product, index) in products_list">
+                  <h2>{{product.title}}</h2>
+                  <h3>{{product.original_title}}</h3>
+                  <span>{{product.original_language}}</span>
+                  <span>{{product.vote_average}}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>  <!-- Closing container -->
       </div>  <!-- Closing page-wrapper -->
     </div>  <!-- Closing #root (VUE JS) -->

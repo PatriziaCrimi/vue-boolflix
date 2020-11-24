@@ -5,7 +5,6 @@ Quando l'utente clicca sul pulsante,
 facciamo una chiamata all'API https://api.themoviedb.org/3/search/movie
 ricordandoci di passare la nostra API key
 e la query di ricerca, ossia il testo inserito dall'utente nell'input.
-
 Con i risultati che riceviamo, visualizziamo in pagina una card per ogni film, stampando per ciascuno:
 - titolo
 - titolo in lingua originale
@@ -31,21 +30,29 @@ let app = new Vue({
   data: {
     page_title: 'VUE Boolflix',
     search_item: '',
+    language_choice: 'it',  // creare una SELECT
+    products_list: [],
   },  // Closing data
   methods: {
     searchProduct() {
-      // AJAX call
-      axios
-      .get('https://api.themoviedb.org/3/search/movie', {
-        params: {
-          api_key: '04718b82fcb8a7a13f6af06054b04c74',
-          query: this.search_item,
-        }
-      }).then(response => {
-        console.log(response);
-        console.log(response.data.results);
-      });
-      this.search_item = '';
+      if(this.search_item === '') {
+        // Error message in case of empty search
+        alert('Empty search. Please enter a valid input in the search bar.')
+      } else {
+        // AJAX call
+        axios
+        .get('https://api.themoviedb.org/3/search/movie', {
+          params: {
+            api_key: '04718b82fcb8a7a13f6af06054b04c74',
+            language: this.language_choice,
+            query: this.search_item,
+          }
+        }).then(response => {
+          this.products_list = response.data.results;
+          console.log(this.products_list);
+        });
+        this.search_item = '';
+      }
     },
   },  // Closing methods
 });
