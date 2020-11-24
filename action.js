@@ -29,13 +29,14 @@ let app = new Vue({
   el: '#root',
   data: {
     page_title: 'VUE Boolflix',
-    search_item: '',
+    product_searched: '',
     language_choice: 'it',  // creare una SELECT
     products_list: [],
+    language_object: {},
   },  // Closing data
   methods: {
     searchProduct() {
-      if(this.search_item === '') {
+      if(this.product_searched === '') {
         // Error message in case of empty search
         alert('Empty search. Please enter a valid input in the search bar.')
       } else {
@@ -45,14 +46,78 @@ let app = new Vue({
           params: {
             api_key: '04718b82fcb8a7a13f6af06054b04c74',
             language: this.language_choice,
-            query: this.search_item,
+            query: this.product_searched,
           }
         }).then(response => {
           this.products_list = response.data.results;
           console.log(this.products_list);
         });
-        this.search_item = '';
+        this.product_searched = '';
       }
+    },
+    languageProduct(current_product) {
+      switch (current_product.original_language) {
+        case 'de':
+          this.language_object = {
+            language: 'Detusch',
+            url: 'img/flags/germany_heart.png',
+          };
+          break;
+        case 'el':
+          this.language_object = {
+            language: 'Greek',
+            url: 'img/flags/greece_heart.png',
+          };
+          break;
+        case 'en':
+          this.language_object = {
+            language: 'English',
+            url: 'img/flags/uk_heart.png',
+          };
+          break;
+        case 'es':
+          this.language_object = {
+            language: 'Español',
+            url: 'img/flags/spain_heart.png',
+          };
+          break;
+        case 'fr':
+          this.language_object = {
+            language: 'French',
+            url: 'img/flags/france_heart.png',
+          };
+          break;
+        case 'it':
+          this.language_object = {
+            language: 'Italiano',
+            url: 'img/flags/italy_heart.png',
+          };
+          break;
+        case 'ja':
+          this.language_object = {
+            language: 'Japanese',
+            url: 'img/flags/japan_heart.png',
+          };
+          break;
+        case 'pt':
+          this.language_object = {
+            language: 'Portuguese',
+            url: 'img/flags/brazil_heart.png',
+          };
+          break;
+        case 'zh':
+          this.language_object = {
+            language: 'Chinese',
+            url: 'img/flags/china_heart.png',
+          };
+          break;
+        default:
+          this.language_object = {
+            language: current_product.original_language,
+            url: '',
+          };
+      } // Closing switch
+      return this.language_object;
     },
   },  // Closing methods
 });

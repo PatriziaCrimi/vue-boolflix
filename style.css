@@ -68,7 +68,7 @@ ul#cards-container > li.product-card {
   padding: 10px;
 }
 
-ul#cards-container > li.product-card > span {
+li.product-card > span {
   display: block;
   font-size: 18px;
 }

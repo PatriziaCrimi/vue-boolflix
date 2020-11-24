@@ -29,7 +29,7 @@
                 <button @click="searchProduct()" type="button" class="btn">
                   <i class="fas fa-search"></i>
                 </button>
-                <input @keyup.enter="searchProduct()" type="text" v-model="search_item" placeholder="Search here">
+                <input @keyup.enter="searchProduct()" type="text" v-model="product_searched" placeholder="Search here">
               </div>
             </div>
           </div>
@@ -39,7 +39,8 @@
                 <li class="product-card text-center" v-for="(product, index) in products_list">
                   <h2>{{product.title}}</h2>
                   <h3>{{product.original_title}}</h3>
-                  <span>{{product.original_language}}</span>
+                  <img :src="languageProduct(product).url" alt="languageProduct(product).language" v-if="languageProduct(product).url !== ''">
+                  <span v-else>{{product.original_language}}</span>
                   <span>{{product.vote_average}}</span>
                 </li>
               </ul>
