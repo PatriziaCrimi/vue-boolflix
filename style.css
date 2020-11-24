@@ -1,0 +1,59 @@
+/* Common features */
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+h1 {
+  text-transform: uppercase;
+  letter-spacing: 1.5;
+  font-weight: 900;
+  padding: 50px 0;
+}
+
+/* Sections */
+
+#page-wrapper {
+  width: 100%;
+  height: 100vh;
+  background-color: lightgrey;
+}
+
+#search-bar {
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#search-bar > button.btn {
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid grey;
+  margin-right: 10px;
+}
+
+#search-bar > input {
+  height: 40px;
+  border-radius: 5px;
+  padding: 0 10px;
+}
+
+
+/* ------------------- MEDIA QUERY ------------------- */
+
+/* Breakpoint Small 576px sm */
+@media screen and (min-width: 576px) {
+}
+
+/* Breakpoint Medium 768px md */
+@media screen and (min-width: 768px) {
+}
+
+/* Breakpoint Large 992px lg */
+@media screen and (min-width: 992px) {
+}
+
+/* Breakpoint Extra Large 1200px xl */
+@media screen and (min-width: 1200px) {
+}
