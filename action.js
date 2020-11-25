@@ -107,21 +107,21 @@ let app = new Vue({
           this.series_list = response.data.results;
           console.log('Series list: ', this.series_list);
           this.is_series_search_ended = true;
+
+          // Checking that both searches have ended
+          if (this.is_movies_search_ended && this.is_series_search_ended) {
+            // Filling the array of products containing the results of all the searches
+            this.products_list = [...this.movies_list, ...this.series_list];
+            console.log('Products list: ', this.products_list);
+            // Checking that the search has given some results
+            if (!this.products_list.length) {
+              this.is_product_found = false;
+            } else {
+              this.is_product_found = true;
+            }
+          }
         });
         // ------------------------ End of AJAX calls ------------------------
-
-        // Checking that both searches have ended
-        if (this.is_movies_search_ended && this.is_series_search_ended) {
-          // Filling the array of products containing the results of all the searches
-          this.products_list = [...this.movies_list, ...this.series_list];
-          console.log('Products list: ', this.products_list);
-          // Checking that the search has given some results
-          if (!this.products_list.length) {
-            this.is_product_found = false;
-          } else {
-            this.is_product_found = true;
-          }
-        }
         this.is_searching = false;
         this.product_searched = '';
       }
