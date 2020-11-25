@@ -81,18 +81,13 @@ main::after {
   left: 0px;
   width: 100%;
   min-height: (100vh);
-  max-height: calc(100% - 80px);
   background: linear-gradient(to top,rgba(0,0,0,.8) 0,rgba(0,0,0,0) 60%,rgba(0,0,0,.8) 100%);
 }
 
-main > section#search-results {
+main section#search-results {
   position: relative;
   z-index: 1;
-}
-
-main > section#products-list {
-  position: relative;
-  z-index: 1;
+  background-color: black;
 }
 
 main ul#cards-container {
@@ -101,6 +96,8 @@ main ul#cards-container {
   flex-wrap: wrap;
   padding-inline-start: 0px;
   margin: 30px;
+  position: relative;
+  z-index: 1;
 }
 
 ul#cards-container > li.product-card {

@@ -133,20 +133,27 @@ let app = new Vue({
     },
     isMovie(current_product) {
       for (let key in current_product) {
-        // Se una delle chiavi è "original_name" oppure "name" ho a che fare con una serie TV,
+        // If one of the keys is "original_title" or "title", then it is a movie
         if (current_product.hasOwnProperty('original_title') || current_product.hasOwnProperty('title')) {
           return true;
+        // If one of the keys is "original_name" or "name", then it is a tv serie
         } else if (current_product.hasOwnProperty('original_name') || current_product.hasOwnProperty('name')){
-          // Se invece una delle chiavi è "title" oppure "original_title" ho a che fare con un film
           return false;
-        } else if (
-            !current_product.hasOwnProperty('original_title') &&
-            !current_product.hasOwnProperty('title') &&
-            !current_product.hasOwnProperty('original_name') &&
-            !current_product.hasOwnProperty('name')) {
+        // If none of the above, it returns null and in the HTML it throws an error message: "Title not available"
+        } else {
           return null;
         }
       }
     },
+    getVote(vote) {
+      return Math.round(vote / 2);
+    },
+    fullStars(current_product) {
+      return getVote(current_product.vote_average);
+    },
+    emptyStars(current_product) {
+      let full_stars = getVote(current_product.vote_average);
+      return 5 - full_stars;
+    }
   },  // Closing methods
 });

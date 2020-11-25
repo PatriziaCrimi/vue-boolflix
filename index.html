@@ -65,6 +65,11 @@
                       <img :src="'img/flags/' + languages_list[languageProduct(product)].url" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product)">
                       <!-- Empty string is considered "false" -->
                       <span v-else>{{product.original_language}}</span>
+                      <div class="product-vote">
+                        <i v-for="full_star in fullStars(product)" class="fas fa-star"></i>
+                        <i v-for="empty_star in emptyStars(product)" class="far fa-star"></i>
+                      </div>
+                      <!-- <div v-else>Vote not available</div> -->
                       <span>{{product.vote_average}}</span>
                     </li>
                   </ul>
