@@ -71,7 +71,6 @@ header > nav .search-bar {
 
 main {
   background-image: url('https://assets.nflxext.com/ffe/siteui/vlv3/84b453b4-0d46-4f2c-bd44-81aa6c19c6b5/a9fa654d-a0b4-459d-860d-34a4f5096c69/IT-en-20201116-popsignuptwoweeks-perspective_alpha_website_small.jpg');
-
 }
 
 main::after {
@@ -81,7 +80,7 @@ main::after {
   top: 80px;
   left: 0px;
   width: 100%;
-  height: calc(100% - 80px);
+  min-height: calc(100% - 160px);
   background: linear-gradient(to top,rgba(0,0,0,.8) 0,rgba(0,0,0,0) 60%,rgba(0,0,0,.8) 100%);
 }
 

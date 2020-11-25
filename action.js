@@ -11,12 +11,14 @@ let app = new Vue({
     page_title: 'Boolflix',
     product_searched: '',
     title_searched: '',
-    searching: false,
-    products_found: true,
+    is_searching: false,
+    is_product_found: true,
     language_choice: 'it-IT',
-    products_list: [],
     movies_list: [],
     series_list: [],
+    products_list: [],
+    is_movies_search_ended: false,
+    is_series_search_ended: false,
     languages_list: [
       {
         code: 'de',
@@ -70,11 +72,13 @@ let app = new Vue({
       // Checking that the user is actually searching for something (space is not a valid input)
       if(this.product_searched.trim()) {
         // Empty string is considered "false"
-        this.searching = true;
+        this.is_searching = true;
         this.title_searched = this.product_searched.trim();
-        // Emptying the array containing the results of the search
+        // Emptying the arrays containing the results of the search
+        this.movies_list = [];
+        this.series_list = [];
         this.products_list = [];
-        // ------------------ AJAX call for movies ------------------
+        // ------------------------ AJAX call for movies ------------------------
         axios
         .get(api_root + '/search/movie', {
           params: {
@@ -84,17 +88,12 @@ let app = new Vue({
           }
           // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
         }).then(response => {
-          this.products_list = response.data.results;
-          console.log(this.products_list);
-          // Checking that the search has given some results
-          if (!this.products_list.length) {
-            this.products_found = false;
-          } else {
-            this.products_found = true;
-          }
-          this.searching = false;
+          // Filling the array of movies
+          this.movies_list = response.data.results;
+          console.log('Movies list: ', this.movies_list);
+          this.is_movies_search_ended = true;
         });
-        // ------------------ AJAX call for tv series ------------------
+        // ---------------------- AJAX call for tv series ----------------------
         axios
         .get(api_root + '/search/tv', {
           params: {
@@ -104,19 +103,26 @@ let app = new Vue({
           }
           // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
         }).then(response => {
+          // Filling the array of tv series
           this.series_list = response.data.results;
-          console.log(this.series_list);
-          /*
-          // Checking that the search has given some results
-          if (!this.series_list.length) {
-            this.products_found = false;
-          } else {
-            this.products_found = true;
-          }
-          this.searching = false;
-          */
+          console.log('Series list: ', this.series_list);
+          this.is_series_search_ended = true;
         });
-        // ------------------ End of AJAX call ------------------
+        // ------------------------ End of AJAX calls ------------------------
+
+        // Checking that both searches have ended
+        if (this.is_movies_search_ended && this.is_series_search_ended) {
+          // Filling the array of products containing the results of all the searches
+          this.products_list = [...this.movies_list, ...this.series_list];
+          console.log('Products list: ', this.products_list);
+          // Checking that the search has given some results
+          if (!this.products_list.length) {
+            this.is_product_found = false;
+          } else {
+            this.is_product_found = true;
+          }
+        }
+        this.is_searching = false;
         this.product_searched = '';
       }
     },
@@ -129,6 +135,14 @@ let app = new Vue({
         }
       });
       return index_product_language;
+    },
+    checkMovie(current_product) {
+      for (let key in current_product) {
+        if (current_product.hasOwnProperty(key)) {
+          // Se una delle chiavi è "original_name" oppure "name" ho a che fare con una serie TV,
+          // Se invece una delle chiavi è "title" oppure "original_title" ho a che fare con un film
+        }
+      }
     },
   },  // Closing methods
 });
