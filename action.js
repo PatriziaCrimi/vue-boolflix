@@ -91,7 +91,6 @@ let app = new Vue({
           // Filling the array of movies
           this.movies_list = response.data.results;
           console.log('Movies list: ', this.movies_list);
-          this.is_movies_search_ended = true;
         });
         // ---------------------- AJAX call for tv series ----------------------
         axios
@@ -106,23 +105,19 @@ let app = new Vue({
           // Filling the array of tv series
           this.series_list = response.data.results;
           console.log('Series list: ', this.series_list);
-          this.is_series_search_ended = true;
 
-          // Checking that both searches have ended
-          if (this.is_movies_search_ended && this.is_series_search_ended) {
-            // Filling the array of products containing the results of all the searches
-            this.products_list = [...this.movies_list, ...this.series_list];
-            console.log('Products list: ', this.products_list);
-            // Checking that the search has given some results
-            if (!this.products_list.length) {
-              this.is_product_found = false;
-            } else {
-              this.is_product_found = true;
-            }
+          // Filling the array of products containing the results of all the searches
+          this.products_list = [...this.movies_list, ...this.series_list];
+          console.log('Products list: ', this.products_list);
+          // Checking that the search has given some results
+          if (!this.products_list.length) {
+            this.is_product_found = false;
+          } else {
+            this.is_product_found = true;
           }
+          this.is_searching = false;
         });
         // ------------------------ End of AJAX calls ------------------------
-        this.is_searching = false;
         this.product_searched = '';
       }
     },
@@ -136,11 +131,20 @@ let app = new Vue({
       });
       return index_product_language;
     },
-    checkMovie(current_product) {
+    isMovie(current_product) {
       for (let key in current_product) {
-        if (current_product.hasOwnProperty(key)) {
-          // Se una delle chiavi è "original_name" oppure "name" ho a che fare con una serie TV,
+        // Se una delle chiavi è "original_name" oppure "name" ho a che fare con una serie TV,
+        if (current_product.hasOwnProperty('original_title') || current_product.hasOwnProperty('title')) {
+          return true;
+        } else if (current_product.hasOwnProperty('original_name') || current_product.hasOwnProperty('name')){
           // Se invece una delle chiavi è "title" oppure "original_title" ho a che fare con un film
+          return false;
+        } else if (
+            !current_product.hasOwnProperty('original_title') &&
+            !current_product.hasOwnProperty('title') &&
+            !current_product.hasOwnProperty('original_name') &&
+            !current_product.hasOwnProperty('name')) {
+          return null;
         }
       }
     },

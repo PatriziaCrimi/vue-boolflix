@@ -41,29 +41,36 @@
         <!-- Main -->
         <main>
           <div class="container">
-            <div class="row">
-              <div class="col-12">
-                <h2 v-if="is_searching">Searching...</h2>
-                <!-- Empty string is considered "false" -->
-                <h2 v-else-if="title_searched && !is_product_found">No results found.</h2>
-                <h2 v-else-if="title_searched && is_product_found">Search results for: "{{title_searched}}"</h2>
+            <section id="search-results">
+              <div class="row">
+                <div class="col-12">
+                  <h2 v-if="is_searching">Searching...</h2>
+                  <!-- Empty string is considered "false" -->
+                  <h2 v-else-if="title_searched && !is_product_found">No results found.</h2>
+                  <h2 v-else-if="title_searched && is_product_found">Search results for: "{{title_searched}}"</h2>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-12">
-                <ul id="cards-container">
-                  <li class="product-card text-center" v-for="(product, index) in products_list">
-                    <h3 v-if="checkMovie(product)">{{product.title}}</h3>
-                    <h3 v-else>{{product.name}}</h3>
-                    <h4 v-if="checkMovie(product)">{{product.original_title}}</h4>
-                    <h4 v-else>{{product.original_name}</h4>
-                    <img :src="'img/flags/' + languages_list[languageProduct(product)].url" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product) !== ''">
-                    <span v-else>{{product.original_language}}</span>
-                    <span>{{product.vote_average}}</span>
-                  </li>
-                </ul>
+            </section>
+            <section id="products-list">
+              <div class="row">
+                <div class="col-12">
+                  <ul id="cards-container">
+                    <li class="product-card text-center" v-for="(product, index) in products_list">
+                      <h3 v-if="isMovie(product)">{{product.title}}</h3>
+                      <h3 v-else>{{product.name}}</h3>
+                      <h3 v-if="isMovie === null">Title not available.</h3>
+                      <h4 v-if="isMovie(product)">{{product.original_title}}</h4>
+                      <h4 v-else>{{product.original_name}}</h4>
+                      <h4 v-if="isMovie === null">Original title not available.</h4>
+                      <img :src="'img/flags/' + languages_list[languageProduct(product)].url" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product)">
+                      <!-- Empty string is considered "false" -->
+                      <span v-else>{{product.original_language}}</span>
+                      <span>{{product.vote_average}}</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </div>
+            </section>
           </div>  <!-- Closing Main container -->
         </main>
         <!-- Footer -->
