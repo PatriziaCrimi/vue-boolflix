@@ -2,6 +2,8 @@
 
 const api_root = 'https://api.themoviedb.org/3';
 const api_key = '04718b82fcb8a7a13f6af06054b04c74';
+const img_url_root = 'https://image.tmdb.org/t/p/';
+const img_size = 'w342';
 
 // ------------------------------ VUE JS ------------------------------
 
@@ -17,8 +19,6 @@ let app = new Vue({
     movies_list: [],
     series_list: [],
     products_list: [],
-    is_movies_search_ended: false,
-    is_series_search_ended: false,
     languages_list: [
       {
         code: 'de',
@@ -121,15 +121,8 @@ let app = new Vue({
         this.product_searched = '';
       }
     },
-    languageProduct(current_product) {
-      let index_product_language = '';
-      this.languages_list.forEach((language_details, index_language) => {
-        // If the language code of the product is the same as the language code of any of the languages available, then I must store the index of the language details, so to retrieve its properties/vaues to be printed on screen
-        if (current_product.original_language === language_details.code) {
-          index_product_language = index_language;
-        }
-      });
-      return index_product_language;
+    urlPoster(current_product) {
+      return img_url_root + img_size + current_product.poster_path;
     },
     isMovie(current_product) {
       for (let key in current_product) {
@@ -145,14 +138,24 @@ let app = new Vue({
         }
       }
     },
+    languageProduct(current_product) {
+      let index_product_language = '';
+      this.languages_list.forEach((language_details, index_language) => {
+        // If the language code of the product is the same as the language code of any of the languages available, then I must store the index of the language details, so to retrieve its properties/vaues to be printed on screen
+        if (current_product.original_language === language_details.code) {
+          index_product_language = index_language;
+        }
+      });
+      return index_product_language;
+    },
     getVote(vote) {
       return Math.round(vote / 2);
     },
     fullStars(current_product) {
-      return getVote(current_product.vote_average);
+      return this.getVote(current_product.vote_average);
     },
     emptyStars(current_product) {
-      let full_stars = getVote(current_product.vote_average);
+      let full_stars = this.getVote(current_product.vote_average);
       return 5 - full_stars;
     }
   },  // Closing methods
