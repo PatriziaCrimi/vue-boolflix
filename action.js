@@ -1,37 +1,22 @@
-/* ASSIGNMENT
-MILESTONE 1
-Creare un layout di base con una barra di ricerca composta da un input e un pulsante.
-Quando l'utente clicca sul pulsante,
-facciamo una chiamata all'API https://api.themoviedb.org/3/search/movie
-ricordandoci di passare la nostra API key
-e la query di ricerca, ossia il testo inserito dall'utente nell'input.
-Con i risultati che riceviamo, visualizziamo in pagina una card per ogni film, stampando per ciascuno:
-- titolo
-- titolo in lingua originale
-- lingua originale
-- voto
+// ------------------- CONSTANTS & VARIABLES INITIALIZATION --------------------
 
-MILESTONE 2
-La seconda milestone è a sua volta suddivisa in 3 punti:
-1- sostituire il voto numerico su base 10 in un voto su base 5
-e visualizzare in totale 5 stelline, di cui tante piene quanto è il voto arrotondato (non gestiamo stelline a metà). Ad esempio, se il voto è 8.2, dobbiamo visualizzare 4 stelline piene e 1 stellina vuota (in totale sempre 5)
-2- sostituire la lingua con una bandierina che identifica il paese.
-Suggerimento: scarichiamo una manciata di bandierine relative alle lingue che vogliamo gestire (attenzione che la lingua è "en", non "us" o "uk").
-Quindi andremo ad inserire solamente le bandierine che sappiamo di avere,
-mentre per le altre lingue di cui non abbiamo previsto la bandierina, lasciamo il codice della lingua testuale
-3- aggiungere ai risultati anche le serie tv. Attenzione che alcune chiavi per le serie tv sono diverse da quelle dei film, come ad esempio "title" per i film e "name" per le serie.
-*/
-
+const api_root = 'https://api.themoviedb.org/3';
+const api_key = '04718b82fcb8a7a13f6af06054b04c74';
 
 // ------------------------------ VUE JS ------------------------------
 
 let app = new Vue({
   el: '#root',
   data: {
-    page_title: 'VUE Boolflix',
+    page_title: 'Boolflix',
     product_searched: '',
-    language_choice: 'it',  // creare una SELECT
+    title_searched: '',
+    searching: false,
+    products_found: true,
+    language_choice: 'it-IT',
     products_list: [],
+    movies_list: [],
+    series_list: [],
     languages_list: [
       {
         code: 'de',
@@ -82,22 +67,56 @@ let app = new Vue({
   },  // Closing data
   methods: {
     searchProduct() {
-      if(this.product_searched === '') {
-        // Error message in case of empty search
-        alert('Empty search. Please enter a valid input in the search bar.')
-      } else {
-        // AJAX call
+      // Checking that the user is actually searching for something (space is not a valid input)
+      if(this.product_searched.trim()) {
+        // Empty string is considered "false"
+        this.searching = true;
+        this.title_searched = this.product_searched.trim();
+        // Emptying the array containing the results of the search
+        this.products_list = [];
+        // ------------------ AJAX call for movies ------------------
         axios
-        .get('https://api.themoviedb.org/3/search/movie', {
+        .get(api_root + '/search/movie', {
           params: {
-            api_key: '04718b82fcb8a7a13f6af06054b04c74',
+            api_key: api_key,
             language: this.language_choice,
             query: this.product_searched,
           }
+          // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
         }).then(response => {
           this.products_list = response.data.results;
           console.log(this.products_list);
+          // Checking that the search has given some results
+          if (!this.products_list.length) {
+            this.products_found = false;
+          } else {
+            this.products_found = true;
+          }
+          this.searching = false;
         });
+        // ------------------ AJAX call for tv series ------------------
+        axios
+        .get(api_root + '/search/tv', {
+          params: {
+            api_key: api_key,
+            language: this.language_choice,
+            query: this.product_searched,
+          }
+          // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
+        }).then(response => {
+          this.series_list = response.data.results;
+          console.log(this.series_list);
+          /*
+          // Checking that the search has given some results
+          if (!this.series_list.length) {
+            this.products_found = false;
+          } else {
+            this.products_found = true;
+          }
+          this.searching = false;
+          */
+        });
+        // ------------------ End of AJAX call ------------------
         this.product_searched = '';
       }
     },

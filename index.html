@@ -17,36 +17,63 @@
   <body>
     <div id="root">
       <div id="page-wrapper">
-        <div class="container">
-          <div class="row">
-            <div class="col-12">
-              <h1 class="text-center">{{page_title}}</h1>
+        <!-- Header -->
+        <header>
+          <!-- Navbar -->
+          <nav class="d-flex align-items-center">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-6">
+                  <h1>{{page_title}}</h1>
+                </div>
+                <div class="col-6 d-flex justify-content-end">
+                  <div class="search-bar">
+                    <input @keyup.enter="searchProduct()" type="text" v-model="product_searched" placeholder="Search here">
+                    <button @click="searchProduct()" type="button" class="btn">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>  <!-- Closing Nav container -->
+          </nav>
+        </header>
+        <!-- Main -->
+        <main>
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <h2 v-if="searching">Searching...</h2>
+                <!-- Empty string is considered "false" -->
+                <h2 v-else-if="title_searched && !products_found">No results found.</h2>
+                <h2 v-else-if="title_searched && products_found">Search results for: "{{title_searched}}"</h2>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-12">
-              <div id="search-bar">
-                <button @click="searchProduct()" type="button" class="btn">
-                  <i class="fas fa-search"></i>
-                </button>
-                <input @keyup.enter="searchProduct()" type="text" v-model="product_searched" placeholder="Search here">
+            <div class="row">
+              <div class="col-12">
+                <ul id="cards-container">
+                  <li class="product-card text-center" v-for="(product, index) in products_list">
+                    <h3>{{product.title}}</h3>
+                    <h4>{{product.original_title}}</h4>
+                    <img :src="'img/flags/' + languages_list[languageProduct(product)].url" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product) !== ''">
+                    <span v-else>{{product.original_language}}</span>
+                    <span>{{product.vote_average}}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>  <!-- Closing Main container -->
+        </main>
+        <!-- Footer -->
+        <footer class="text-center">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <small>Powered by: Patrizia Crimi</small>
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-12">
-              <ul id="cards-container">
-                <li class="product-card text-center" v-for="(product, index) in products_list">
-                  <h2>{{product.title}}</h2>
-                  <h3>{{product.original_title}}</h3>
-                  <img :src="'img/flags/' + languages_list[languageProduct(product)].url" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product) !== ''">
-                  <span v-else>{{product.original_language}}</span>
-                  <span>{{product.vote_average}}</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>  <!-- Closing container -->
+        </footer>
       </div>  <!-- Closing page-wrapper -->
     </div>  <!-- Closing #root (VUE JS) -->
     <script type="text/javascript" src="action.js"></script>
