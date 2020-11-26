@@ -4,6 +4,13 @@ const api_root = 'https://api.themoviedb.org/3';
 const api_key = '04718b82fcb8a7a13f6af06054b04c74';
 const img_url_root = 'https://image.tmdb.org/t/p/';
 const img_size = 'w342';
+// Defining the parameters for most of the next AJAX calls
+let api_params = {
+  params: {
+    api_key: api_key,
+    language: this.language_choice,
+  }
+};
 
 // ------------------------------ VUE JS ------------------------------
 
@@ -15,8 +22,12 @@ let app = new Vue({
     title_searched: '',
     is_searching: false,
     index_active_product: '',
+    // is_flipped: false,
     language_choice: 'it-IT',
+    product_genres_list: [],
     products_list: [],
+    genres_list: [],
+    cast_list: [],
     languages_list: [
       {
         code: 'de',
@@ -66,7 +77,7 @@ let app = new Vue({
     ],
   },  // Closing data
   methods: {
-    getResults(response_array) {
+    getProducts(response_array) {
       // ***** OPTION 1 - CONCAT() *****
       this.products_list = this.products_list.concat(response_array);
       /*
@@ -86,8 +97,8 @@ let app = new Vue({
         // Emptying the array containing the results of the search
         this.products_list = [];
 
-        // Defining the parameters for both the AJAX calls
-        let api_params = {
+        // Defining the parameters for both the next AJAX calls
+        let api_params_query = {
           params: {
             api_key: api_key,
             language: this.language_choice,
@@ -97,23 +108,87 @@ let app = new Vue({
 
         // ------------------------ AJAX call for movies ------------------------
         axios
-        .get(api_root + '/search/movie', api_params)
+        .get(api_root + '/search/movie', api_params_query)
         // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
         .then(response => {
           // Filling the array of products with the movies found in this AJAX call while concatening whatever was already in the "products_list" array (if the second AJAX call had ended first, this array would contain already the tv series)
-          this.getResults(response.data.results); // --> This part of code needs to be repeated in both AJAX calls because of ASYNC
+          this.getProducts(response.data.results); // --> This part of code needs to be repeated in both AJAX calls because of ASYNC
         });
 
         // ---------------------- AJAX call for tv series ----------------------
         axios
-        .get(api_root + '/search/tv', api_params)
+        .get(api_root + '/search/tv', api_params_query)
         .then(response => {
           // Filling the array of products with the tv series found in this AJAX call while concatening whatever was already in the "products_list" array (if the first AJAX call had ended first, this array would contain already the movies)
-          this.getResults(response.data.results); // --> This part of code needs to be repeated in both AJAX calls because of ASYNC
+          this.getProducts(response.data.results); // --> This part of code needs to be repeated in both AJAX calls because of ASYNC
         });
         // ------------------------ End of AJAX calls ------------------------
         // Emptying the input value
         this.product_searched = '';
+      }
+    },
+    getGenres(current_product) {
+      // Retrieving the genres codes for the current product
+      let current_product_genres_codes = current_product.genre_ids;
+      // Checking if the current product is a movie or a tv serie
+      if(this.isMovie(current_product)) {
+        // -------------------- AJAX call for movies genres --------------------
+        axios
+        .get(api_root + '/genre/movie/list', api_params)
+        .then(response => {
+          this.genres_list = this.genres_list.concat(response.data.genres);
+          console.log('Genres list: ', this.genres_list);
+          // Scanning the array of all genres
+          this.genres_list.forEach((genre_listed) => {
+            current_product_genres_codes.forEach((product_genre_code) => {
+              if(genre_listed.id === product_genre_code) {
+                this.product_genres_list.push(genre_listed.name);
+              }
+            });
+          });
+          console.log('Product genres list: ' , this.product_genres_list);
+          console.log('Product genres list: ' + this.product_genres_list.join(', '));
+        });
+      } else {
+        // ------------------- AJAX call for tv series genres -------------------
+        axios
+        .get(api_root + '/genre/tv/list', api_params)
+        .then(response => {
+          this.genres_list = this.genres_list.concat(response.data.genres);
+          console.log('Genres list: ', this.genres_list);
+          // Scanning the array of all genres
+          this.genres_list.forEach((genre_listed) => {
+            current_product_genres_codes.forEach((product_genre_code) => {
+              if(genre_listed.id === product_genre_code) {
+                this.product_genres_list.push(genre_listed.name);
+              }
+            });
+          });
+          console.log('Product genres list: ' , this.product_genres_list);
+          console.log('Product genres list: ' + this.product_genres_list.join(', '));
+        });
+      }
+    },
+    getCast(current_product) {
+      // Checking if the current product is a movie or a tv serie
+      if(this.isMovie(current_product)) {
+        // --------------------- AJAX call for movies cast ---------------------
+        axios
+        .get(api_root + '/movie/' + current_product.id + '/credits', api_params)
+        .then(response => {
+          this.cast_list = response.cast
+          // slice(0, 4);
+          console.log(this.cast_list);
+        });
+      } else {
+        // -------------------- AJAX call for tv series cast --------------------
+        axios
+        .get(api_root + '/tv/' + current_product.id + '/credits', api_params)
+        .then(response => {
+          this.cast_list = response.cast
+          // slice(0, 4);
+          console.log(this.cast_list);
+        });
       }
     },
     isMovie(current_product) {
@@ -154,8 +229,9 @@ let app = new Vue({
     getEmptyStars(current_vote) {
       return 5 - this.getFullStars(current_vote);
     },
-    showInfoProduct(index_product) {
+    flipCard(index_product) {
       this.index_active_product = index_product;
+      // this.is_flipped = true;
     },
   },  // Closing methods
 });
