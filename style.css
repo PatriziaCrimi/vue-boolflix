@@ -116,19 +116,32 @@ main ul#cards-container {
 }
 
 ul#cards-container > li.product-card {
-  width: 344px;
+  width: 342px;
   border: 2px solid #fff;
   background-color: black;
   margin: 10px 0;
+  object-fit: cover;
 }
 
-li.product-card > img {
-  height:
+/*
+li.product-card .product-poster {
 }
+
+li.product-card .product-poster > img {
+  width: 100%;
+}
+
+li.product-card .product-info {
+}
+*/
 
 li.product-card > span {
   display: block;
   font-size: 18px;
+}
+
+li.product-card > .product-vote > i {
+  color: #f6b922;
 }
 
 /* ------------------------------ Footer ------------------------------ */

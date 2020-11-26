@@ -14,6 +14,7 @@ let app = new Vue({
     product_searched: '',
     title_searched: '',
     is_searching: false,
+    index_active_product: '',
     language_choice: 'it-IT',
     products_list: [],
     languages_list: [
@@ -152,6 +153,10 @@ let app = new Vue({
     },
     getEmptyStars(current_vote) {
       return 5 - this.getFullStars(current_vote);
-    }
+    },
+    showInfoProduct(index_product) {
+      this.index_active_product = index_product;
+      console.log('show', this.index_active_product);
+    },
   },  // Closing methods
 });
