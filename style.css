@@ -19,11 +19,19 @@ h2 {
 h3 {
   font-size: 22px;
   font-weight: 700;
+  padding: 10px 0;
 }
 
 h4 {
   font-size: 20px;
   font-weight: 500;
+  padding: 10px 0;
+}
+
+p {
+  text-align: justify;
+  padding: 10px 0;
+  color: #c3c3c3;
 }
 
 ul {
@@ -117,31 +125,42 @@ main ul#cards-container {
 
 ul#cards-container > li.product-card {
   width: 342px;
+  height: 500px;
   border: 2px solid #fff;
   background-color: black;
   margin: 10px 0;
+}
+
+li.product-card > .product-poster,
+.product-poster > img {
+  width: 100%;
   object-fit: cover;
 }
 
-/*
-li.product-card .product-poster {
-}
-
-li.product-card .product-poster > img {
+li.product-card > .product-info {
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
 }
 
-li.product-card .product-info {
+li.product-card > .product-info img {
+  padding: 10px 0;
 }
-*/
 
-li.product-card > span {
+li.product-card > .product-info small {
+  color: #e50914;
+  font-size: 16px;
+}
+
+li.product-card span {
   display: block;
   font-size: 18px;
 }
 
-li.product-card > .product-vote > i {
+li.product-card > .product-info > .product-vote > i {
   color: #f6b922;
+  padding: 10px 0;
 }
 
 /* ------------------------------ Footer ------------------------------ */

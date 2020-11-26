@@ -156,7 +156,6 @@ let app = new Vue({
     },
     showInfoProduct(index_product) {
       this.index_active_product = index_product;
-      console.log('show', this.index_active_product);
     },
   },  // Closing methods
 });

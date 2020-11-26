@@ -57,18 +57,25 @@
               <div class="row">
                 <div class="col-12">
                   <ul id="cards-container">
-                    <li class="product-card text-center" v-for="(product, index) in products_list" @mouseover="showInfoProduct(index)" @mouseleave="index_active_product = ''">
+                    <li class="product-card text-center" v-for="(product, index) in products_list" @mouseenter="showInfoProduct(index)" @mouseleave="index_active_product = ''">
                       <!-- Product poster -->
                       <div v-if="index_active_product !== index" class="product-poster">
                         <img :src="getUrlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
                       </div>
+                      <!-- Product Information -->
                       <div v-else class="product-info">
                         <!-- Product title -->
                         <h3 v-if="isMovie === null">Title n/a</h3>
                         <h3 v-else>{{isMovie(product) ? product.title : product.name}}</h3>
                         <!-- Product original title -->
-                        <h4 v-if="isMovie === null">Original title n/a</h4>
-                        <h4 v-else>{{isMovie(product) ? product.original_title : product.original_name}}</h4>
+                        <h4 v-if="isMovie === null">
+                          <small>Original title: </small>
+                          n/a
+                        </h4>
+                        <h4 v-else>
+                          <small>Original title: </small>
+                          {{isMovie(product) ? product.original_title : product.original_name}}
+                        </h4>
                         <!-- Language and flag -->
                         <img :src="getUrlFlag(product)" :alt="languages_list[getIndexLanguage(product)].language" v-if="getIndexLanguage(product)"> <!-- Empty string is considered false -->
                         <span v-else>{{product.original_language}}</span>
@@ -77,11 +84,20 @@
                           <i v-for="full_star in getFullStars(product.vote_average)" class="fas fa-star"></i>
                           <i v-for="empty_star in getEmptyStars(product.vote_average)" class="far fa-star"></i>
                         </div>
-                        <span v-else>Vote n/a</span>
+                        <span v-else>
+                          <small>Vote: </small>
+                           n/a
+                         </span>
                         <!-- Overview -->
-                        <p v-if="product.overview.length">{{product.overview}}</p>
-                        <p v-else>Overview n/a</p>
-                      </div>   <!-- Closing product details -->
+                        <p v-if="product.overview.length">
+                          <small>Overview: </small>
+                          {{product.overview}}
+                        </p>
+                        <span v-else class="text-center">
+                          <small>Overview: </small>
+                          n/a
+                        </span>
+                      </div>   <!-- Closing product information -->
                     </li>
                   </ul>
                 </div>
