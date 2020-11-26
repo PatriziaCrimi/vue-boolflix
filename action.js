@@ -65,6 +65,17 @@ let app = new Vue({
     ],
   },  // Closing data
   methods: {
+    getResults(response_array) {
+      // ***** OPTION 1 - CONCAT() *****
+      this.products_list = this.products_list.concat(response_array);
+      /*
+      // ***** OPTION 2 - SPREAD OPERATOR *****
+      this.products_list = [...this.products_list, ...response_array];
+      */
+      console.log('Products list: ', this.products_list);
+      // Search ended
+      this.is_searching = false;
+    },
     searchProduct() {
       // Checking that the user is actually searching for something (space is not a valid input)
       if(this.product_searched.trim()) {
@@ -82,67 +93,51 @@ let app = new Vue({
             query: this.product_searched,
           }
         };
+
         // ------------------------ AJAX call for movies ------------------------
         axios
         .get(api_root + '/search/movie', api_params)
         // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
         .then(response => {
-          // Filling the array of products with the movies found in the first AJAX call while concatening whatever was already in the "products_list" array (if the second AJAX call had ended first, this array would contain already the tv series) --> This part of code needs to be repeated in both AJAX calls because of ASYNC
-
-          // ***** OPTION 1 - CONCAT() *****
-          this.products_list = this.products_list.concat(response.data.results);
-          /*
-          // ***** OPTION 2 - SPREAD OPERATOR *****
-          this.products_list = [...this.products_list, ...response.data.results];
-          */
-          console.log('Products list (after movies AJAX call): ', this.products_list);
-
-          // Search ended
-          this.is_searching = false;
+          // Filling the array of products with the movies found in this AJAX call while concatening whatever was already in the "products_list" array (if the second AJAX call had ended first, this array would contain already the tv series)
+          this.getResults(response.data.results); // --> This part of code needs to be repeated in both AJAX calls because of ASYNC
         });
 
         // ---------------------- AJAX call for tv series ----------------------
         axios
         .get(api_root + '/search/tv', api_params)
         .then(response => {
-          // Filling the array of products with the tv series found in the second AJAX call while concatening whatever was already in the "products_list" array (if the first AJAX call had ended first, this array would contain already the movies) --> This part of code needs to be repeated in both AJAX calls because of ASYNC
-
-          // ***** OPTION 1 - CONCAT() *****
-          this.products_list = this.products_list.concat(response.data.results);
-          /*
-          // ***** OPTION 2 - SPREAD OPERATOR *****
-          this.products_list = [...this.products_list, ...response.data.results];
-          */
-          console.log('Products list (after tv series AJAX call): ', this.products_list);
-
-          // Search ended
-          this.is_searching = false;
+          // Filling the array of products with the tv series found in this AJAX call while concatening whatever was already in the "products_list" array (if the first AJAX call had ended first, this array would contain already the movies)
+          this.getResults(response.data.results); // --> This part of code needs to be repeated in both AJAX calls because of ASYNC
         });
         // ------------------------ End of AJAX calls ------------------------
+        // Emptying the input value
         this.product_searched = '';
       }
     },
     isMovie(current_product) {
-      for (let key in current_product) {
-        // If one of the keys is "original_title" or "title", then it is a movie
-        if (current_product.hasOwnProperty('original_title') || current_product.hasOwnProperty('title')) {
-          return true;
-        // If one of the keys is "original_name" or "name", then it is a tv serie
-        } else if (current_product.hasOwnProperty('original_name') || current_product.hasOwnProperty('name')){
-          return false;
-        // If none of the above, it returns null and in the HTML it throws an error message: "Title not available"
-        } else {
-          return null;
-        }
+      // If one of the keys is "original_title" or "title", then it is a movie
+      if (current_product.hasOwnProperty('original_title') || current_product.hasOwnProperty('title')) {
+        return true;
+      // If one of the keys is "original_name" or "name", then it is a tv serie
+      } else if (current_product.hasOwnProperty('original_name') || current_product.hasOwnProperty('name')){
+        return false;
+      // If none of the above, it returns null and in the HTML it throws an error message: "Title not available"
+      } else {
+        return null;
       }
     },
     getUrlPoster(current_product) {
-      return img_url_root + img_size + current_product.poster_path;
+      if (current_product.poster_path) {
+        return img_url_root + img_size + current_product.poster_path;
+      } else {
+        return 'img/poster_na.png'
+      }
     },
     getUrlFlag(current_product) {
-      return 'img/flags/' + this.languages_list[this.languageProduct(current_product)].url + '.png';
+      return 'img/flags/' + this.languages_list[this.getIndexLanguage(current_product)].url + '.png';
     },
-    languageProduct(current_product) {
+    getIndexLanguage(current_product) {
       let index_product_language = '';
       this.languages_list.forEach((language_details, index_language) => {
         // If the language code of the product is the same as the language code of any of the languages available, then I must store the index of the language details, so to retrieve its properties/vaues to be printed on screen

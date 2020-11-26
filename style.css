@@ -158,4 +158,7 @@ footer {
 
 /* Breakpoint Extra Large 1200px xl */
 @media screen and (min-width: 1200px) {
+  main {
+    background-size: cover;
+  }
 }

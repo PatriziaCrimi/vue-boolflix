@@ -61,15 +61,13 @@
                       <!-- Product poster -->
                       <img :src="getUrlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
                       <!-- Product title -->
-                      <h3 v-if="isMovie(product)">{{product.title}}</h3>
-                      <h3 v-else>{{product.name}}</h3>
-                      <h3 v-if="isMovie === null">Title not available.</h3>
+                      <h3 v-if="isMovie === null">Title n/a</h3>
+                      <h3 v-else>{{isMovie(product) ? product.title : product.name}}</h3>
                       <!-- Product original title -->
-                      <h4 v-if="isMovie(product)">{{product.original_title}}</h4>
-                      <h4 v-else>{{product.original_name}}</h4>
-                      <h4 v-if="isMovie === null">Original title not available.</h4>
+                      <h4 v-if="isMovie === null">Original title n/a</h4>
+                      <h4 v-else>{{isMovie(product) ? product.original_title : product.original_name}}</h4>
                       <!-- Language and flag -->
-                      <img :src="getUrlFlag(product)" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product)"> <!-- Empty string is considered false -->
+                      <img :src="getUrlFlag(product)" :alt="languages_list[getIndexLanguage(product)].language" v-if="getIndexLanguage(product)"> <!-- Empty string is considered false -->
                       <span v-else>{{product.original_language}}</span>
                       <!-- Vote and stars -->
                       <div class="product-vote" v-if="product.vote_average">
