@@ -56,8 +56,8 @@
             <section id="products-list">
               <div class="row">
                 <div class="col-12">
-                  <ul id="cards-container" @mouseover="showInfoProduct(index)" @mouseleave="index_active_product = ''">
-                    <li class="product-card text-center" v-for="(product, index) in products_list">
+                  <ul id="cards-container">
+                    <li class="product-card text-center" v-for="(product, index) in products_list" @mouseover="showInfoProduct(index)" @mouseleave="index_active_product = ''">
                       <!-- Product poster -->
                       <div v-if="index_active_product !== index" class="product-poster">
                         <img :src="getUrlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
