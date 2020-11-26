@@ -14,56 +14,53 @@ let app = new Vue({
     product_searched: '',
     title_searched: '',
     is_searching: false,
-    is_product_found: true,
     language_choice: 'it-IT',
-    movies_list: [],
-    series_list: [],
     products_list: [],
     languages_list: [
       {
         code: 'de',
         language: 'Detusch',
-        url: 'germany_heart.png',
+        url: 'germany_heart',
       },
       {
         code: 'el',
         language: 'Greek',
-        url: 'greece_heart.png',
+        url: 'greece_heart',
       },
       {
         code: 'en',
         language: 'English',
-        url: 'uk_heart.png',
+        url: 'uk_heart',
       },
       {
         code: 'es',
         language: 'Español',
-        url: 'spain_heart.png',
+        url: 'spain_heart',
       },
       {
         code: 'fr',
         language: 'French',
-        url: 'france_heart.png',
+        url: 'france_heart',
       },
       {
         code: 'ja',
         language: 'Japanese',
-        url: 'japan_heart.png',
+        url: 'japan_heart',
       },
       {
         code: 'it',
         language: 'Italiano',
-        url: 'italy_heart.png',
+        url: 'italy_heart',
       },
       {
         code: 'pt',
         language: 'Portuguese',
-        url: 'brazil_heart.png',
+        url: 'brazil_heart',
       },
       {
         code: 'zh',
         language: 'Chinese',
-        url: 'china_heart.png',
+        url: 'china_heart',
       },
     ],
   },  // Closing data
@@ -74,55 +71,56 @@ let app = new Vue({
         // Empty string is considered "false"
         this.is_searching = true;
         this.title_searched = this.product_searched.trim();
-        // Emptying the arrays containing the results of the search
-        this.movies_list = [];
-        this.series_list = [];
+        // Emptying the array containing the results of the search
         this.products_list = [];
+
+        // Defining the parameters for both the AJAX calls
+        let api_params = {
+          params: {
+            api_key: api_key,
+            language: this.language_choice,
+            query: this.product_searched,
+          }
+        };
         // ------------------------ AJAX call for movies ------------------------
         axios
-        .get(api_root + '/search/movie', {
-          params: {
-            api_key: api_key,
-            language: this.language_choice,
-            query: this.product_searched,
-          }
-          // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
-        }).then(response => {
-          // Filling the array of movies
-          this.movies_list = response.data.results;
-          console.log('Movies list: ', this.movies_list);
+        .get(api_root + '/search/movie', api_params)
+        // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
+        .then(response => {
+          // Filling the array of products with the movies found in the first AJAX call while concatening whatever was already in the "products_list" array (if the second AJAX call had ended first, this array would contain already the tv series) --> This part of code needs to be repeated in both AJAX calls because of ASYNC
+
+          // ***** OPTION 1 - CONCAT() *****
+          this.products_list = this.products_list.concat(response.data.results);
+          /*
+          // ***** OPTION 2 - SPREAD OPERATOR *****
+          this.products_list = [...this.products_list, ...response.data.results];
+          */
+          console.log('Products list (after movies AJAX call): ', this.products_list);
+
+          // Search ended
+          this.is_searching = false;
         });
+
         // ---------------------- AJAX call for tv series ----------------------
         axios
-        .get(api_root + '/search/tv', {
-          params: {
-            api_key: api_key,
-            language: this.language_choice,
-            query: this.product_searched,
-          }
-          // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
-        }).then(response => {
-          // Filling the array of tv series
-          this.series_list = response.data.results;
-          console.log('Series list: ', this.series_list);
+        .get(api_root + '/search/tv', api_params)
+        .then(response => {
+          // Filling the array of products with the tv series found in the second AJAX call while concatening whatever was already in the "products_list" array (if the first AJAX call had ended first, this array would contain already the movies) --> This part of code needs to be repeated in both AJAX calls because of ASYNC
 
-          // Filling the array of products containing the results of all the searches
-          this.products_list = [...this.movies_list, ...this.series_list];
-          console.log('Products list: ', this.products_list);
-          // Checking that the search has given some results
-          if (!this.products_list.length) {
-            this.is_product_found = false;
-          } else {
-            this.is_product_found = true;
-          }
+          // ***** OPTION 1 - CONCAT() *****
+          this.products_list = this.products_list.concat(response.data.results);
+          /*
+          // ***** OPTION 2 - SPREAD OPERATOR *****
+          this.products_list = [...this.products_list, ...response.data.results];
+          */
+          console.log('Products list (after tv series AJAX call): ', this.products_list);
+
+          // Search ended
           this.is_searching = false;
         });
         // ------------------------ End of AJAX calls ------------------------
         this.product_searched = '';
       }
-    },
-    urlPoster(current_product) {
-      return img_url_root + img_size + current_product.poster_path;
     },
     isMovie(current_product) {
       for (let key in current_product) {
@@ -138,6 +136,12 @@ let app = new Vue({
         }
       }
     },
+    getUrlPoster(current_product) {
+      return img_url_root + img_size + current_product.poster_path;
+    },
+    getUrlFlag(current_product) {
+      return 'img/flags/' + this.languages_list[this.languageProduct(current_product)].url + '.png';
+    },
     languageProduct(current_product) {
       let index_product_language = '';
       this.languages_list.forEach((language_details, index_language) => {
@@ -148,15 +152,11 @@ let app = new Vue({
       });
       return index_product_language;
     },
-    getVote(vote) {
-      return Math.round(vote / 2);
+    getFullStars(current_vote) {
+      return Math.ceil(current_vote / 2);
     },
-    fullStars(current_product) {
-      return this.getVote(current_product.vote_average);
-    },
-    emptyStars(current_product) {
-      let full_stars = this.getVote(current_product.vote_average);
-      return 5 - full_stars;
+    getEmptyStars(current_vote) {
+      return 5 - this.getFullStars(current_vote);
     }
   },  // Closing methods
 });

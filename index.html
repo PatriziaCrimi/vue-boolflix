@@ -43,8 +43,8 @@
                 <div class="col-12">
                   <h2 v-if="is_searching">Searching...</h2>
                   <!-- Empty string is considered "false" -->
-                  <h2 v-else-if="title_searched && !is_product_found">No results found.</h2>
-                  <h2 v-else-if="title_searched && is_product_found">Search results for: "{{title_searched}}"</h2>
+                  <h2 v-else-if="title_searched && !products_list.length">No results found.</h2>
+                  <h2 v-else-if="title_searched && products_list.length">Search results for: "{{title_searched}}"</h2>
                 </div>
               </div>
             </div>  <!-- Closing Section "search-results" container -->
@@ -58,20 +58,25 @@
                 <div class="col-12">
                   <ul id="cards-container">
                     <li class="product-card text-center" v-for="(product, index) in products_list">
-                      <img :src="urlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
+                      <!-- Product poster -->
+                      <img :src="getUrlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
+                      <!-- Product title -->
                       <h3 v-if="isMovie(product)">{{product.title}}</h3>
                       <h3 v-else>{{product.name}}</h3>
                       <h3 v-if="isMovie === null">Title not available.</h3>
+                      <!-- Product original title -->
                       <h4 v-if="isMovie(product)">{{product.original_title}}</h4>
                       <h4 v-else>{{product.original_name}}</h4>
                       <h4 v-if="isMovie === null">Original title not available.</h4>
-                      <img :src="'img/flags/' + languages_list[languageProduct(product)].url" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product)">
-                      <!-- Empty string is considered "false" -->
+                      <!-- Language and flag -->
+                      <img :src="getUrlFlag(product)" :alt="languages_list[languageProduct(product)].language" v-if="languageProduct(product)"> <!-- Empty string is considered false -->
                       <span v-else>{{product.original_language}}</span>
-                      <div class="product-vote">
-                        <i v-for="full_star in fullStars(product)" class="fas fa-star"></i>
-                        <i v-for="empty_star in emptyStars(product)" class="far fa-star"></i>
+                      <!-- Vote and stars -->
+                      <div class="product-vote" v-if="product.vote_average">
+                        <i v-for="full_star in getFullStars(product.vote_average)" class="fas fa-star"></i>
+                        <i v-for="empty_star in getEmptyStars(product.vote_average)" class="far fa-star"></i>
                       </div>
+                      <span v-else>n/a</span>
                     </li>
                   </ul>
                 </div>
