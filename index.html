@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js" integrity="sha512-DZqqY3PiOvTP9HkjIWgjO6ouCbq+dxqWoJZ/Q+zPYNHmlnI2dQnbJ5bxAHpAMw+LXRm4D72EIRXzvcHQtE8/VQ==" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
@@ -57,61 +56,59 @@
               <div class="row">
                 <div class="col-12">
                   <ul id="cards-container">
-                    <li class="product-card text-center" v-for="(product, index) in products_list" @mouseenter="flipCard(index)" @mouseleave="index_active_product = ''">
+                    <li class="product-card" v-for="(product, index) in products_list" @mouseenter="flipCard(index)" @mouseleave="index_active_product = ''">
+                      <div class="flip-card-inner">
 
-                      <!-- Product poster -->
-                      <div v-if="index_active_product !== index" class="product-poster">
-                        <img :src="getUrlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
-                      </div>
+                        <!-- Product poster -->
+                        <div class="product-card-front" v-if="index_active_product !== index">
+                          <img class="poster" :src="getUrlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
+                        </div>
 
-                      <!-- Product Information -->
-                      <div v-else class="product-info">
-                        <!-- Product title -->
-                        <h3 v-if="isMovie === null">Title n/a</h3>
-                        <h3 v-else>{{isMovie(product) ? product.title : product.name}}</h3>
-                        <!-- Product original title -->
-                        <div v-if="isMovie === null" class="original-title">
-                          <small>Original title: </small>
-                          <h4>n/a</h4>
-                        </div>
-                        <div v-else class="original-title">
-                          <small>Original title: </small>
-                          <h4>{{isMovie(product) ? product.original_title : product.original_name}}</h4>
-                        </div>
-                        <!-- Language and flag -->
-                        <img :src="getUrlFlag(product)" :alt="languages_list[getIndexLanguage(product)].language" v-if="getIndexLanguage(product)"> <!-- Empty string is considered false -->
-                        <p v-else>{{product.original_language}}</p>
-                        <!-- Vote and stars -->
-                        <div class="product-vote" v-if="product.vote_average">
-                          <i v-for="full_star in getFullStars(product.vote_average)" class="fas fa-star"></i>
-                          <i v-for="empty_star in getEmptyStars(product.vote_average)" class="far fa-star"></i>
-                        </div>
-                        <div v-else>
-                          <small>Vote: </small>
-                          <span>n/a</span>
-                        </div>
-                        <!-- Genres -->
-                        <div>
-                          <small>Genres: </small>
-                          <span v-if="getProductGenres(product).length">{{getProductGenres(product)}}</span>
-                          <span v-else>n/a</span>
-                        </div>
-                        <!-- Cast -->
-                        <div>
-                          <small>Cast: </small>
-                          <span>{{getCast(product)}}</span>
-                        </div>
-                        <!-- Overview -->
-                        <div v-if="product.overview.length" class="overview">
-                          <small>Overview: </small>
-                          <p>{{product.overview}}</p>
-                        </div>
-                        <div v-else class="text-center">
-                          <small>Overview: </small>
-                          <span>n/a</span>
-                        </div>
-                      </div>   <!-- Closing product information -->
-
+                        <!-- Product Information -->
+                        <div v-else class="product-card-back text-center">
+                          <!-- Product title -->
+                          <h3 v-if="isMovie === null">Title n/a</h3>
+                          <h3 v-else>{{isMovie(product) ? product.title : product.name}}</h3>
+                          <!-- Product original title -->
+                          <div class="original-title">
+                            <small>Original title: </small>
+                            <h4 v-if="isMovie === null">n/a</h4>
+                            <h4 v-else>{{isMovie(product) ? product.original_title : product.original_name}}</h4>
+                          </div>
+                          <!-- Language and flag -->
+                          <img class="flag" :src="getUrlFlag(product)" :alt="languages_list[getIndexLanguage(product)].language" v-if="getIndexLanguage(product)"> <!-- Empty string is considered false -->
+                          <p v-else>{{product.original_language}}</p>
+                          <!-- Vote and stars -->
+                          <div v-if="product.vote_average" class="product-vote">
+                            <i v-for="full_star in getFullStars(product.vote_average)" class="fas fa-star"></i>
+                            <i v-for="empty_star in getEmptyStars(product.vote_average)" class="far fa-star"></i>
+                          </div>
+                          <div v-else class="product-vote">
+                            <small>Vote: </small>
+                            <span>n/a</span>
+                          </div>
+                          <!-- Genres -->
+                          <div class"product-genres">
+                            <small>Genres: </small>
+                            <span v-if="getProductGenres(product).length">{{getProductGenres(product)}}</span>
+                            <span v-else>n/a</span>
+                          </div>
+                          <!-- Cast -->
+                          <div class="product-cast">
+                            <small>Cast: </small>
+                            <span>cast list</span>
+                          </div>
+                          <!-- Overview -->
+                          <div v-if="product.overview.length" class="product-overview">
+                            <small>Overview: </small>
+                            <p>{{product.overview}}</p>
+                          </div>
+                          <div v-else class="text-center">
+                            <small>Overview: </small>
+                            <span>n/a</span>
+                          </div>
+                        </div>   <!-- Closing product information -->
+                      </div>  <!-- Closing card-inner -->
                     </li>
                   </ul>
                 </div>

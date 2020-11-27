@@ -176,8 +176,7 @@ let app = new Vue({
           });
         });
         console.log(product_cast_list);
-        console.log(product_cast_list.join(', '));
-        return product_cast_list.join(', ');
+        return product_cast_list;
       } else {
         // ------------------- AJAX call for tv series cast -------------------
         axios
@@ -189,8 +188,7 @@ let app = new Vue({
           });
         });
         console.log(product_cast_list);
-        console.log(product_cast_list.join(', '));
-        return product_cast_list.join(', ');
+        return product_cast_list;
       }
     },
     isMovie(current_product) {
@@ -229,8 +227,10 @@ let app = new Vue({
     getEmptyStars(current_vote) {
       return 5 - this.getFullStars(current_vote);
     },
+
     flipCard(index_product) {
       this.index_active_product = index_product;
     },
+
   },  // Closing methods
 });

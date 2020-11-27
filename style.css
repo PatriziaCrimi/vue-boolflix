@@ -94,6 +94,8 @@ header > nav .search-bar {
   color: #fff;
 }
 
+/* Section Search-results */
+
 header section#search-results {
   background-color: #e50914;
   height: 120px;
@@ -103,6 +105,7 @@ header section#search-results {
 header section#search-results h2 {
   height: 40px;
   line-height: 40px;
+  text-shadow: 1px 1px black;
 }
 
 /* ------------------------------ Main ------------------------------ */
@@ -138,59 +141,90 @@ main ul#cards-container {
   z-index: 1;
 }
 
+/* This is the flip card container */
 ul#cards-container > li.product-card {
   width: 342px;
   height: 500px;
-  border: 2px solid #fff;
-  background-color: black;
   margin: 10px 0;
+  background-color: transparent;
+  perspective: 1000px; /* Remove this if you don't want the 3D effect when flipping*/
 }
 
-ul#cards-container > li.product-card:hover {
-  border: 2px solid #e50914;
-}
-
-li.product-card > .product-poster,
-.product-poster > img {
+/* This container is needed to position the front and back side of the flipping card */
+li.product-card > .flip-card-inner {
+  position: relative;
   width: 100%;
   height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
 }
 
-.product-poster > img {
+li.product-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+li.product-card > .product-card-front {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  border: 2px solid #fff;
+  /* Properties for flipping the card */
+  position: absolute;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+}
+
+.product-card-front > img.poster {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-li.product-card > .product-info {
+li.product-card > .product-card-back {
   width: 100%;
   height: 100%;
+  background-color: black;
+  border: 2px solid #fff;
   overflow-y: auto;
   padding: 20px;
+  /* Properties for flipping the card */
+  position: absolute;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
 }
 
-.product-info > .original-title {
-  padding: 10px 0;
+/*
+li.product-card > .product-card-front:hover,
+li.product-card > .product-card-back:hover {
+  border: 2px solid #e50914;
+  cursor: pointer;
 }
+*/
 
-.product-info img {  // Flag language
-  padding: 10px 0;
-}
-
-.product-info small {
+.product-card-back small {
   color: #e50914;
   font-size: 16px;
 }
 
-.product-info > .product-vote > i {
-  color: #f6b922;
+.product-card-back > .original-title,
+.product-card-back img.flag,
+.product-card-back > .product-vote,
+.product-card-back > .product-genres,
+.product-card-back > .product-cast {
   padding: 10px 0;
 }
 
-.product-info > .overview {
+.product-card-back > .product-vote > i {
+  color: #f6b922;
+}
+
+.product-card-back > .product-overview {
   padding: 10px 10px 0;
   text-align: justify;
 }
 
-.product-info > .overview > p {
+.product-card-back > .product-overview > p {
   display: inline;
   color: #c3c3c3;
   font-size: 16px;
