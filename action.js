@@ -6,6 +6,7 @@ const poster_url_root = 'https://image.tmdb.org/t/p/';
 const poster_size = 'w342';
 const poster_na = 'img/poster_na.png';
 let language_choice = 'it-IT';
+const cast_members = 5;
 // Defining the parameters for most of the next AJAX calls
 let api_params = {
   params: {
@@ -23,8 +24,11 @@ let app = new Vue({
     product_searched: '',
     title_searched: '',
     is_searching: false,
+    is_overview: false,
+    index_active_product: '',
     products_list: [],
     genres_list: [],
+    product_cast_list: [],
     languages_list: [
       {
         code: 'de',
@@ -119,8 +123,7 @@ let app = new Vue({
             query: this.product_searched,
           }
         };
-
-        // ------------------------ AJAX call for movies ------------------------
+        // -------------------- AJAX call for movies search --------------------
         axios
         .get(api_root + '/search/movie', api_params_query)
         // NB: Only the "response" to the AJAX call is ASYNC (what is in "then()")
@@ -128,8 +131,7 @@ let app = new Vue({
           // Filling the array of products with the movies found in this AJAX call while concatening whatever was already in the "products_list" array (if the second AJAX call had ended first, this array would contain already the tv series)
           this.getProducts(response.data.results); // --> This part of code needs to be repeated in both AJAX calls because of ASYNC
         });
-
-        // ---------------------- AJAX call for tv series ----------------------
+        // ------------------ AJAX call for tv series search ------------------
         axios
         .get(api_root + '/search/tv', api_params_query)
         .then(response => {
@@ -141,70 +143,28 @@ let app = new Vue({
         this.product_searched = '';
       }
     },
-    getProductGenres(current_product) {
-      let product_genres_list = [];
-      // Retrieving the genres codes for the current product
-      let current_product_genres_codes = current_product.genre_ids;
-      // Scanning the array of all genres (created in "mounted")
-      this.genres_list.forEach((genre_listed) => {
-        // Scanning the array of genres codes of this current product
-        current_product_genres_codes.forEach((product_genre_code) => {
-          // Checking if the genre ion the list correspond to any of the genres of the product
-          if(genre_listed.id === product_genre_code) {
-            // Checking if the genre is a duplicate and had already been found
-            if(!product_genres_list.includes(genre_listed.name)) {
-              product_genres_list.push(genre_listed.name);
-            }
-          }
-        });
-      });
-      return product_genres_list.join(', ');
-    },
-    getCast(current_product) {
-      let cast_list = [];
-      let product_cast_list = [];
-      // Checking if the current product is a movie or a tv serie
-      if(this.isMovie(current_product)) {
-        // --------------------- AJAX call for movies cast ---------------------
-        axios
-        .get(api_root + '/movie/' + current_product.id + '/credits', api_params)
-        .then(response => {
-          cast_list = response.data.cast.slice(0, 5);
-          cast_list.forEach((actor) => {
-            product_cast_list.push(actor.name);
-          });
-        });
-      } else {
-        // ------------------- AJAX call for tv series cast -------------------
-        axios
-        .get(api_root + '/tv/' + current_product.id + '/credits', api_params)
-        .then(response => {
-          cast_list = response.data.cast.slice(0, 5);
-          cast_list.forEach((actor) => {
-            product_cast_list.push(actor.name);
-          });
-        });
-      }
-      console.log(product_cast_list);
-      console.log(product_cast_list.join());
-      return product_cast_list.join();
-    },
     isMovie(current_product) {
+      let is_movie;
       // If one of the keys is "original_title" or "title", then it is a movie
       if (current_product.hasOwnProperty('original_title') || current_product.hasOwnProperty('title')) {
-        return true;
+        is_movie = true;
       // If one of the keys is "original_name" or "name", then it is a tv serie
       } else if (current_product.hasOwnProperty('original_name') || current_product.hasOwnProperty('name')){
-        return false;
+        is_movie = false;
       // If none of the above, it returns null and in the HTML it throws an error message: "Title not available"
-      }
-      return null;
+    } else {
+      is_movie = null;
+    }
+      return is_movie;
     },
     getUrlPoster(current_product) {
+      let img_path;
       if (current_product.poster_path) {
-        return poster_url_root + poster_size + current_product.poster_path;
+        img_path = poster_url_root + poster_size + current_product.poster_path;
+      } else {
+        img_path = poster_na;
       }
-      return poster_na;
+      return img_path;
     },
     getUrlFlag(current_product) {
       return 'img/flags/' + this.languages_list[this.getIndexLanguage(current_product)].url + '.png';
@@ -224,6 +184,67 @@ let app = new Vue({
     },
     getEmptyStars(current_vote) {
       return 5 - this.getFullStars(current_vote);
+    },
+    getProductGenres(current_product) {
+      let product_genres_list = [];
+      // Retrieving the genres codes for the current product
+      let current_product_genres_codes = current_product.genre_ids;
+      // Scanning the array of all genres (created in "mounted")
+      this.genres_list.forEach((genre_listed) => {
+        // Scanning the array of genres codes of this current product
+        current_product_genres_codes.forEach((product_genre_code) => {
+          // Checking if the genre on the list corresponds to any of the genres of the product
+          if(genre_listed.id === product_genre_code) {
+            // Checking if the genre is a duplicate and had already been found
+            if(!product_genres_list.includes(genre_listed.name)) {
+              product_genres_list.push(genre_listed.name);
+            }
+          }
+        });
+      });
+      return product_genres_list.join(', ');
+    },
+    getCastList(ajax_response, num_cast, cast_final_array) {
+      let cast_array = [];
+      // Retrieving the cast members objects from the AJAX call rsponse
+      cast_array = ajax_response.data.cast.slice(0, num_cast);
+      // Scanning the array of objects to push only the full name property
+      cast_array.forEach((actor) => {
+        cast_final_array.push(actor.name);
+      });
+      console.log('Cast list: ' , cast_final_array);
+    },
+    getProductCast(current_product) {
+      this.product_cast_list = [];
+      // Checking if the current product is a movie or a tv serie
+      if(this.isMovie(current_product)) {
+        // --------------------- AJAX call for movies cast ---------------------
+        axios
+        .get(api_root + '/movie/' + current_product.id + '/credits', api_params)
+        .then(response => {
+          this.getCastList(response, cast_members, this.product_cast_list);
+        });
+      } else {
+        // ------------------- AJAX call for tv series cast -------------------
+        axios
+        .get(api_root + '/tv/' + current_product.id + '/credits', api_params)
+        .then(response => {
+          this.getCastList(response, cast_members, this.product_cast_list);
+        });
+      }
+    },
+    toggleOverview(index_product) {
+      this.index_active_product = index_product;
+      if(this.is_overview) {
+        this.is_overview = false;
+      } else {
+        this.is_overview = true;
+      }
+      return this.is_overview;
+    },
+    closeOverview() {
+      this.index_active_product = '';
+      this.is_overview = false;
     },
   },  // Closing methods
 });
