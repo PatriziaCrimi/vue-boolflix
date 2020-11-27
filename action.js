@@ -26,7 +26,6 @@ let app = new Vue({
     index_active_product: '',
     products_list: [],
     genres_list: [],
-    cast_list: [],
     languages_list: [
       {
         code: 'de',
@@ -85,14 +84,12 @@ let app = new Vue({
       .get(api_root + '/genre/movie/list', api_params)
       .then(response => {
         this.genres_list = this.genres_list.concat(response.data.genres);
-        console.log('Genres list (movies call): ', this.genres_list);
       });
       // ------------------- AJAX call for tv series genres -------------------
       axios
       .get(api_root + '/genre/tv/list', api_params)
       .then(response => {
         this.genres_list = this.genres_list.concat(response.data.genres);
-        console.log('Genres list (tv series call): ', this.genres_list);
       });
     },
     getProducts(response_array) {
@@ -165,31 +162,35 @@ let app = new Vue({
       return product_genres_list.join(', ');
     },
     getCast(current_product) {
+      let cast_list = [];
+      let product_cast_list = [];
       // Checking if the current product is a movie or a tv serie
       if(this.isMovie(current_product)) {
         // --------------------- AJAX call for movies cast ---------------------
-        let api_path_param_movie = {
-            movie_id: current_product.id,
-        };
         axios
-        .get(api_root + '/movie/', api_path_param_movie , '/credits', api_params)
+        .get(api_root + '/movie/' + current_product.id + '/credits', api_params)
         .then(response => {
-          this.cast_list = response.cast
-          // slice(0, 5);
-          console.log(this.cast_list);
+          cast_list = response.data.cast.slice(0, 5);
+          cast_list.forEach((actor) => {
+            product_cast_list.push(actor.name);
+          });
         });
+        console.log(product_cast_list);
+        console.log(product_cast_list.join(', '));
+        return product_cast_list.join(', ');
       } else {
         // ------------------- AJAX call for tv series cast -------------------
-        let api_path_param_serie = {
-            tv_id: current_product.id,
-        };
         axios
-        .get(api_root + '/tv/', api_path_param_serie , '/credits', api_params)
+        .get(api_root + '/tv/' + current_product.id + '/credits', api_params)
         .then(response => {
-          this.cast_list = response;
-          // slice(0, 5);
-          console.log(this.cast_list);
+          cast_list = response.data.cast.slice(0, 5);
+          cast_list.forEach((actor) => {
+            product_cast_list.push(actor.name);
+          });
         });
+        console.log(product_cast_list);
+        console.log(product_cast_list.join(', '));
+        return product_cast_list.join(', ');
       }
     },
     isMovie(current_product) {

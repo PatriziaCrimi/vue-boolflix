@@ -97,9 +97,9 @@
                           <span v-else>n/a</span>
                         </div>
                         <!-- Cast -->
-                        <div @click="getCast(product)">
+                        <div>
                           <small>Cast: </small>
-                          <span>cast list</span>
+                          <span>{{getCast(product)}}</span>
                         </div>
                         <!-- Overview -->
                         <div v-if="product.overview.length" class="overview">
