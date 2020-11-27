@@ -157,21 +157,26 @@ li.product-card > .flip-card-inner {
   height: 100%;
   transition: transform 0.8s;
   transform-style: preserve-3d;
+  border: 2px solid #fff;
 }
 
 li.product-card:hover .flip-card-inner {
   transform: rotateY(180deg);
+  border: 2px solid #e50914;
+  cursor: pointer;
 }
 
-li.product-card > .product-card-front {
+/* Position the front and back side */
+.product-card-front, .product-card-back {
+  position: absolute;
   width: 100%;
   height: 100%;
-  background-color: black;
-  border: 2px solid #fff;
-  /* Properties for flipping the card */
-  position: absolute;
   -webkit-backface-visibility: hidden; /* Safari */
   backface-visibility: hidden;
+}
+
+.product-card-front {
+  background-color: black;
 }
 
 .product-card-front > img.poster {
@@ -180,31 +185,17 @@ li.product-card > .product-card-front {
   object-fit: cover;
 }
 
-li.product-card > .product-card-back {
-  width: 100%;
-  height: 100%;
+.product-card-back {
   background-color: black;
-  border: 2px solid #fff;
   overflow-y: auto;
   padding: 20px;
-  /* Properties for flipping the card */
-  position: absolute;
-  -webkit-backface-visibility: hidden; /* Safari */
-  backface-visibility: hidden;
   transform: rotateY(180deg);
 }
-
-/*
-li.product-card > .product-card-front:hover,
-li.product-card > .product-card-back:hover {
-  border: 2px solid #e50914;
-  cursor: pointer;
-}
-*/
 
 .product-card-back small {
   color: #e50914;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .product-card-back > .original-title,
@@ -212,7 +203,7 @@ li.product-card > .product-card-back:hover {
 .product-card-back > .product-vote,
 .product-card-back > .product-genres,
 .product-card-back > .product-cast {
-  padding: 10px 0;
+  padding: 8px 0;
 }
 
 .product-card-back > .product-vote > i {

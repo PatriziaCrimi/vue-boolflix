@@ -56,16 +56,14 @@
               <div class="row">
                 <div class="col-12">
                   <ul id="cards-container">
-                    <li class="product-card" v-for="(product, index) in products_list" @mouseenter="flipCard(index)" @mouseleave="index_active_product = ''">
+                    <li class="product-card" v-for="(product, index) in products_list">
                       <div class="flip-card-inner">
-
                         <!-- Product poster -->
-                        <div class="product-card-front" v-if="index_active_product !== index">
+                        <div class="product-card-front">
                           <img class="poster" :src="getUrlPoster(product)" :alt="isMovie(product) ? product.title : product.name">
                         </div>
-
                         <!-- Product Information -->
-                        <div v-else class="product-card-back text-center">
+                        <div class="product-card-back text-center">
                           <!-- Product title -->
                           <h3 v-if="isMovie === null">Title n/a</h3>
                           <h3 v-else>{{isMovie(product) ? product.title : product.name}}</h3>
@@ -88,14 +86,14 @@
                             <span>n/a</span>
                           </div>
                           <!-- Genres -->
-                          <div class"product-genres">
-                            <small>Genres: </small>
+                          <div class="product-genres">
+                            <small>Genre: </small>
                             <span v-if="getProductGenres(product).length">{{getProductGenres(product)}}</span>
                             <span v-else>n/a</span>
                           </div>
                           <!-- Cast -->
                           <div class="product-cast">
-                            <small>Cast: </small>
+                            <small @click="getCast(product)">Cast: </small>
                             <span>cast list</span>
                           </div>
                           <!-- Overview -->

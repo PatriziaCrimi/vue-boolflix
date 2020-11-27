@@ -23,7 +23,6 @@ let app = new Vue({
     product_searched: '',
     title_searched: '',
     is_searching: false,
-    index_active_product: '',
     products_list: [],
     genres_list: [],
     languages_list: [
@@ -175,8 +174,6 @@ let app = new Vue({
             product_cast_list.push(actor.name);
           });
         });
-        console.log(product_cast_list);
-        return product_cast_list;
       } else {
         // ------------------- AJAX call for tv series cast -------------------
         axios
@@ -187,9 +184,10 @@ let app = new Vue({
             product_cast_list.push(actor.name);
           });
         });
-        console.log(product_cast_list);
-        return product_cast_list;
       }
+      console.log(product_cast_list);
+      console.log(product_cast_list.join());
+      return product_cast_list.join();
     },
     isMovie(current_product) {
       // If one of the keys is "original_title" or "title", then it is a movie
@@ -227,10 +225,5 @@ let app = new Vue({
     getEmptyStars(current_vote) {
       return 5 - this.getFullStars(current_vote);
     },
-
-    flipCard(index_product) {
-      this.index_active_product = index_product;
-    },
-
   },  // Closing methods
 });
