@@ -28,7 +28,7 @@ h4 {
   font-weight: 500;
 }
 
-p {
+p, span {
   font-size: 18px;
 }
 
@@ -185,9 +185,13 @@ li.product-card > .product-info {
   padding: 10px 0;
 }
 
-.product-info p.overview {
-  text-align: justify;
+.product-info > .overview {
   padding: 10px 10px 0;
+  text-align: justify;
+}
+
+.product-info > .overview > p {
+  display: inline-block;
   color: #c3c3c3;
   font-size: 16px;
 }

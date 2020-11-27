@@ -153,24 +153,24 @@ let app = new Vue({
       this.genres_list.forEach((genre_listed) => {
         // Scanning the array of genres codes of this current product
         current_product_genres_codes.forEach((product_genre_code) => {
+          // Checking if the genre ion the list correspond to any of the genres of the product
           if(genre_listed.id === product_genre_code) {
+            // Checking if the genre is a duplicate and had already been found
             if(!product_genres_list.includes(genre_listed.name)) {
               product_genres_list.push(genre_listed.name);
             }
           }
         });
       });
-      console.log('Product genres list: ' , product_genres_list);
-      console.log('Product genres list: ' + product_genres_list.join(', '));
       return product_genres_list.join(', ');
     },
     getCast(current_product) {
-      let api_path_param_movie = {
-          movie_id: current_product.id,
-      };
       // Checking if the current product is a movie or a tv serie
       if(this.isMovie(current_product)) {
         // --------------------- AJAX call for movies cast ---------------------
+        let api_path_param_movie = {
+            movie_id: current_product.id,
+        };
         axios
         .get(api_root + '/movie/', api_path_param_movie , '/credits', api_params)
         .then(response => {

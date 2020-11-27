@@ -86,28 +86,30 @@
                           <i v-for="full_star in getFullStars(product.vote_average)" class="fas fa-star"></i>
                           <i v-for="empty_star in getEmptyStars(product.vote_average)" class="far fa-star"></i>
                         </div>
-                        <p v-else>
+                        <div v-else>
                           <small>Vote: </small>
-                          n/a
-                        </p>
+                          <span>n/a</span>
+                        </div>
                         <!-- Genres -->
-                        <p>
+                        <div>
                           <small>Genres: </small>
-                          {{getProductGenres(product)}}
-                        </p>
+                          <span v-if="getProductGenres(product).length">{{getProductGenres(product)}}</span>
+                          <span v-else>n/a</span>
+                        </div>
                         <!-- Cast -->
-                        <p @click="getCast(product)">
+                        <div @click="getCast(product)">
                           <small>Cast: </small>
-                        </p>
+                          <span>cast list</span>
+                        </div>
                         <!-- Overview -->
-                        <p class="overview" v-if="product.overview.length">
+                        <div v-if="product.overview.length" class="overview">
                           <small>Overview: </small>
-                          {{product.overview}}
-                        </p>
-                        <p v-else class="text-center">
+                          <p>{{product.overview}}</p>
+                        </div>
+                        <div v-else class="text-center">
                           <small>Overview: </small>
-                          n/a
-                        </p>
+                          <span>n/a</span>
+                        </div>
                       </div>   <!-- Closing product information -->
 
                     </li>
