@@ -146,10 +146,18 @@ ul#cards-container > li.product-card {
   margin: 10px 0;
 }
 
+ul#cards-container > li.product-card:hover {
+  border: 2px solid #e50914;
+}
+
 li.product-card > .product-poster,
 .product-poster > img {
   width: 100%;
   height: 100%;
+}
+
+.product-poster > img {
+  object-fit: cover;
 }
 
 li.product-card > .product-info {
@@ -183,34 +191,6 @@ li.product-card > .product-info {
   color: #c3c3c3;
   font-size: 16px;
 }
-
-/* -------------------- Transition - Flip product card -------------------- */
-
-/*
-.flip-enter {
-  transform: rotateY(0deg);
-}
-
-.flip-enter-to {
-  transform: rotateY(180deg);
-}
-
-.flip-enter-active {
-  transition: transform 2s ease-in-out;
-}
-
-.flip-leave {
-  transform: rotateY(180deg);
-}
-
-.flip-leave-to {
-  transform: rotateY(90deg);
-}
-
-.flip-leave-active {
-  transition: transform 2s ease-in-out;
-}
-*/
 
 /* ------------------------------ Footer ------------------------------ */
 

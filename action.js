@@ -2,13 +2,15 @@
 
 const api_root = 'https://api.themoviedb.org/3';
 const api_key = '04718b82fcb8a7a13f6af06054b04c74';
-const img_url_root = 'https://image.tmdb.org/t/p/';
-const img_size = 'w342';
+const poster_url_root = 'https://image.tmdb.org/t/p/';
+const poster_size = 'w342';
+const poster_na = 'img/poster_na.png';
+let language_choice = 'it-IT';
 // Defining the parameters for most of the next AJAX calls
 let api_params = {
   params: {
     api_key: api_key,
-    language: this.language_choice,
+    language: language_choice,
   }
 };
 
@@ -22,9 +24,6 @@ let app = new Vue({
     title_searched: '',
     is_searching: false,
     index_active_product: '',
-    // is_flipped: false,
-    language_choice: 'it-IT',
-    product_genres_list: [],
     products_list: [],
     genres_list: [],
     cast_list: [],
@@ -76,7 +75,26 @@ let app = new Vue({
       },
     ],
   },  // Closing data
+  mounted: function() {
+    this.getGenresList();
+  },  // Closing mounted
   methods: {
+    getGenresList() {
+      // -------------------- AJAX call for movies genres --------------------
+      axios
+      .get(api_root + '/genre/movie/list', api_params)
+      .then(response => {
+        this.genres_list = this.genres_list.concat(response.data.genres);
+        console.log('Genres list (movies call): ', this.genres_list);
+      });
+      // ------------------- AJAX call for tv series genres -------------------
+      axios
+      .get(api_root + '/genre/tv/list', api_params)
+      .then(response => {
+        this.genres_list = this.genres_list.concat(response.data.genres);
+        console.log('Genres list (tv series call): ', this.genres_list);
+      });
+    },
     getProducts(response_array) {
       // ***** OPTION 1 - CONCAT() *****
       this.products_list = this.products_list.concat(response_array);
@@ -101,7 +119,7 @@ let app = new Vue({
         let api_params_query = {
           params: {
             api_key: api_key,
-            language: this.language_choice,
+            language: language_choice,
             query: this.product_searched,
           }
         };
@@ -127,66 +145,49 @@ let app = new Vue({
         this.product_searched = '';
       }
     },
-    getGenres(current_product) {
+    getProductGenres(current_product) {
+      let product_genres_list = [];
       // Retrieving the genres codes for the current product
       let current_product_genres_codes = current_product.genre_ids;
-      // Checking if the current product is a movie or a tv serie
-      if(this.isMovie(current_product)) {
-        // -------------------- AJAX call for movies genres --------------------
-        axios
-        .get(api_root + '/genre/movie/list', api_params)
-        .then(response => {
-          this.genres_list = this.genres_list.concat(response.data.genres);
-          console.log('Genres list: ', this.genres_list);
-          // Scanning the array of all genres
-          this.genres_list.forEach((genre_listed) => {
-            current_product_genres_codes.forEach((product_genre_code) => {
-              if(genre_listed.id === product_genre_code) {
-                this.product_genres_list.push(genre_listed.name);
-              }
-            });
-          });
-          console.log('Product genres list: ' , this.product_genres_list);
-          console.log('Product genres list: ' + this.product_genres_list.join(', '));
+      // Scanning the array of all genres (created in "mounted")
+      this.genres_list.forEach((genre_listed) => {
+        // Scanning the array of genres codes of this current product
+        current_product_genres_codes.forEach((product_genre_code) => {
+          if(genre_listed.id === product_genre_code) {
+            if(!product_genres_list.includes(genre_listed.name)) {
+              product_genres_list.push(genre_listed.name);
+            }
+          }
         });
-      } else {
-        // ------------------- AJAX call for tv series genres -------------------
-        axios
-        .get(api_root + '/genre/tv/list', api_params)
-        .then(response => {
-          this.genres_list = this.genres_list.concat(response.data.genres);
-          console.log('Genres list: ', this.genres_list);
-          // Scanning the array of all genres
-          this.genres_list.forEach((genre_listed) => {
-            current_product_genres_codes.forEach((product_genre_code) => {
-              if(genre_listed.id === product_genre_code) {
-                this.product_genres_list.push(genre_listed.name);
-              }
-            });
-          });
-          console.log('Product genres list: ' , this.product_genres_list);
-          console.log('Product genres list: ' + this.product_genres_list.join(', '));
-        });
-      }
+      });
+      console.log('Product genres list: ' , product_genres_list);
+      console.log('Product genres list: ' + product_genres_list.join(', '));
+      return product_genres_list.join(', ');
     },
     getCast(current_product) {
+      let api_path_param_movie = {
+          movie_id: current_product.id,
+      };
       // Checking if the current product is a movie or a tv serie
       if(this.isMovie(current_product)) {
         // --------------------- AJAX call for movies cast ---------------------
         axios
-        .get(api_root + '/movie/' + current_product.id + '/credits', api_params)
+        .get(api_root + '/movie/', api_path_param_movie , '/credits', api_params)
         .then(response => {
           this.cast_list = response.cast
-          // slice(0, 4);
+          // slice(0, 5);
           console.log(this.cast_list);
         });
       } else {
-        // -------------------- AJAX call for tv series cast --------------------
+        // ------------------- AJAX call for tv series cast -------------------
+        let api_path_param_serie = {
+            tv_id: current_product.id,
+        };
         axios
-        .get(api_root + '/tv/' + current_product.id + '/credits', api_params)
+        .get(api_root + '/tv/', api_path_param_serie , '/credits', api_params)
         .then(response => {
-          this.cast_list = response.cast
-          // slice(0, 4);
+          this.cast_list = response;
+          // slice(0, 5);
           console.log(this.cast_list);
         });
       }
@@ -199,16 +200,14 @@ let app = new Vue({
       } else if (current_product.hasOwnProperty('original_name') || current_product.hasOwnProperty('name')){
         return false;
       // If none of the above, it returns null and in the HTML it throws an error message: "Title not available"
-      } else {
-        return null;
       }
+      return null;
     },
     getUrlPoster(current_product) {
       if (current_product.poster_path) {
-        return img_url_root + img_size + current_product.poster_path;
-      } else {
-        return 'img/poster_na.png'
+        return poster_url_root + poster_size + current_product.poster_path;
       }
+      return poster_na;
     },
     getUrlFlag(current_product) {
       return 'img/flags/' + this.languages_list[this.getIndexLanguage(current_product)].url + '.png';
@@ -231,7 +230,6 @@ let app = new Vue({
     },
     flipCard(index_product) {
       this.index_active_product = index_product;
-      // this.is_flipped = true;
     },
   },  // Closing methods
 });
